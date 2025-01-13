@@ -13,12 +13,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/pelicula-sala-cine")
 @CrossOrigin(origins = "http://localhost:4200")
 
 public class PeliculaSalaCineController {
+
+    private static final Logger logger = LoggerFactory.getLogger(PeliculaController.class);
+
 
     @Autowired
     private PeliculaSalaCineService peliculaSalaCineService;
@@ -31,8 +36,13 @@ public class PeliculaSalaCineController {
 
     @PostMapping
     public ResponseEntity<PeliculaSalaCineModel> savePelicula(@RequestBody PeliculaSalaCineModel peliculaSalaCine) {
+        logger.info("Cuerpo recibido: {}", peliculaSalaCine);
         return ResponseEntity.ok(peliculaSalaCineService.savePeliculaSalaCine(peliculaSalaCine));
     }
+
+
+
+
 
     @GetMapping("/porFecha")
     public ResponseEntity<Object> getPeliculasPorFecha(

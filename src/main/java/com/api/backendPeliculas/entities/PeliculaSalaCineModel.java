@@ -25,7 +25,9 @@ public class PeliculaSalaCineModel {
     @NotNull(message = "La sala de cine no puede ser nula")
     private SalaCineModel salaCine;
 
+    @Temporal(TemporalType.DATE)
     private Date fechaPublicacion;
+    @Temporal(TemporalType.DATE)
     private Date fechaFin;
 
     public Long getIdPeliculaSala() {
@@ -66,5 +68,15 @@ public class PeliculaSalaCineModel {
 
     public void setFechaFin(Date fechaFin) {
         this.fechaFin = fechaFin;
+    }
+    @Override
+    public String toString() {
+        return "PeliculaSalaCineModel{" +
+                "idPeliculaSala=" + idPeliculaSala +
+                ", pelicula=" + (pelicula != null ? pelicula.getIdPelicula() : "null") +
+                ", salaCine=" + (salaCine != null ? salaCine.getIdSalaCine() : "null") +
+                ", fechaPublicacion=" + fechaPublicacion +
+                ", fechaFin=" + fechaFin +
+                '}';
     }
 }
