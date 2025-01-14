@@ -1,15 +1,23 @@
 package com.api.backendPeliculas.controllers;
 
 import com.api.backendPeliculas.entities.PeliculaModel;
+import com.api.backendPeliculas.exception.LocalNotFountException;
+import com.api.backendPeliculas.jsonDynamic.GenericRequest;
+import com.api.backendPeliculas.jsonDynamic.GenericResponse;
 import com.api.backendPeliculas.services.PeliculaService;
-import jakarta.persistence.EntityNotFoundException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/pelicula")
@@ -20,35 +28,58 @@ public class PeliculaController {
     @Autowired
     private PeliculaService peliculaService;
 
-    //para obtener todas las peliculas
+    public static final String JSON_EJEMPLO = """
+            {
+              "body": {
+                "nombre": "string",
+                "duracion": "number",
+                "estado": "number"
+              }
+            }
+            """;
+
     @GetMapping
-    public List<PeliculaModel> getAllPeliculas(){
-        return peliculaService.getAllPeliculasActivas();
+    public ResponseEntity<GenericResponse> getAllPeliculas() {
+        GenericResponse response = peliculaService.getAllPeliculasActivas();
+        return retornarResponse(response);
     }
 
     @PostMapping
-    public PeliculaModel savePelicula(@Valid @RequestBody PeliculaModel pelicula){
-        return peliculaService.savePelicula(pelicula);
+    public ResponseEntity<GenericResponse> savePelicula(@RequestBody GenericRequest request){
+
+        GenericResponse response = peliculaService.savePelicula(request);
+        return retornarResponse(response);
     }
 
     @PutMapping("/editar/{id}")
-    public PeliculaModel editarPelicula(@Valid @RequestBody PeliculaModel pelicula, @PathVariable Long id) {
-        try {
-            pelicula.setIdPelicula(id);
-            PeliculaModel peliculaEditada = peliculaService.editPelicula(pelicula);
-            if (peliculaEditada == null) {
-                throw new EntityNotFoundException("No se encontró la película con el id: " + id);
-            }
-            return peliculaEditada;
-        } catch (EntityNotFoundException ex) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
-        } catch (Exception ex) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error inesperado al editar la película", ex);
-        }
+    @Operation(
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    value = JSON_EJEMPLO
+                            )
+                    )
+            )
+    )
+    public ResponseEntity<GenericResponse> editarPelicula(@RequestBody GenericRequest request, @PathVariable Long id){
+        GenericResponse response = peliculaService.editPelicula(request, id);
+        return retornarResponse(response);
     }
 
     @DeleteMapping("/eliminar/{id}")
-    public void eliminarPelicula(@PathVariable Long id){
-        peliculaService.deletePelicula(id);
+    public ResponseEntity<GenericResponse> eliminarPelicula(@PathVariable Long id){
+        GenericResponse response = peliculaService.deletePelicula(id);
+        return retornarResponse(response);
     }
+
+    private ResponseEntity<GenericResponse> retornarResponse (GenericResponse response) {
+        if ("error".equals(response.getStatus())) {
+            return ResponseEntity.status(500).body(response);
+        } else {
+            return ResponseEntity.ok(response);
+        }
+    }
+
+
 }
