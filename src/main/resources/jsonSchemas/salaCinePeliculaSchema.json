@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/pelicula.schema.json",
+  "title": "PeliculaSalaCine",
+  "description": "Esquema para insertar o actualizar una película",
+  "type": "object",
+  "properties": {
+    "pelicula": {
+      "type": "object",
+      "properties": {
+        "idPelicula": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "El identificador de la película"
+        }
+      },
+      "required": ["idPelicula"]
+    },
+    "salaCine": {
+      "type": "object",
+      "properties": {
+        "idSalaCine": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "El identificador de la sala de cine"
+        }
+      },
+      "required": ["idSalaCine"]
+    },
+    "fechaPublicacion": {
+      "type": "string",
+        "format": "date",
+      "description": "Fecha de publicación de la película"
+    },
+    "fechaFin": {
+      "type": "string",
+      "format": "date",
+      "description": "Fecha de publicación de la película"
+    }
+
+  }
+
+
+}

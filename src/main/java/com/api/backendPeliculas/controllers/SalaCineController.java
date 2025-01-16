@@ -2,9 +2,11 @@ package com.api.backendPeliculas.controllers;
 
 import com.api.backendPeliculas.entities.PeliculaModel;
 import com.api.backendPeliculas.entities.SalaCineModel;
+import com.api.backendPeliculas.helpers.SalaCineHelper;
 import com.api.backendPeliculas.jsonDynamic.GenericRequest;
 import com.api.backendPeliculas.jsonDynamic.GenericResponse;
 import com.api.backendPeliculas.services.SalaCineService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -22,11 +24,12 @@ public class SalaCineController {
 
     @Autowired
     private SalaCineService salaCineService;
+    @Autowired
+    private SalaCineHelper salaCineHelper;
 
     @GetMapping
     public ResponseEntity<GenericResponse> getAllSalaCineActivas(){
-        GenericResponse response = salaCineService.getAllSalaCineActiva();
-        return retornarResponse(response);
+       return salaCineService.getAllSalaCineActiva();
     }
 
     @PostMapping
@@ -36,15 +39,17 @@ public class SalaCineController {
                             mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = """
-                                            {"body": {"nombre": "string","estado": 1}}
+                                            {
+                                            "nombre": "string",
+                                            "estado": 1
+                                            }
                                             """
                             )
                     )
             )
     )
-    public ResponseEntity<GenericResponse> saveSalaCine(@RequestBody GenericRequest request){
-        GenericResponse response = salaCineService.createSalaCine(request);
-        return retornarResponse(response);
+    public ResponseEntity<GenericResponse> saveSalaCine(@Valid @RequestBody SalaCineModel salaCine) throws JsonProcessingException {
+        return salaCineHelper.validarYGuardarSalaCine(salaCine);
     }
 
     @PutMapping("/editar/{id}")
@@ -54,33 +59,22 @@ public class SalaCineController {
                             mediaType = "application/json",
                             examples = @ExampleObject(
                                     value = """
-                                            {"body": {"nombre": "string","estado": 1}}
+                                            {
+                                            "nombre": "string",
+                                            "estado": 1
+                                            }
                                             """
                             )
                     )
             )
     )
-    public ResponseEntity<GenericResponse> editarSalaCine(@RequestBody GenericRequest request, @PathVariable Long id){
-
-        GenericResponse response = salaCineService.updateSalaCine(request,id);
-        return retornarResponse(response);
+    public ResponseEntity<GenericResponse> editarSalaCine(@Valid @RequestBody SalaCineModel salaCine, @PathVariable Long id) throws JsonProcessingException {
+        return salaCineHelper.editarSalaCine(salaCine, id);
     }
 
     @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<GenericResponse> eliminarSalaCine(@PathVariable Long id){
-        GenericResponse response = salaCineService.deleteSalaCine(id);
-        return retornarResponse(response);
+        return salaCineHelper.eliminarSalaCine(id);
     }
-
-
-    private ResponseEntity<GenericResponse> retornarResponse (GenericResponse response) {
-        if ("error".equals(response.getStatus())) {
-            return ResponseEntity.status(500).body(response);
-        } else {
-            return ResponseEntity.ok(response);
-        }
-    }
-
-
 
 }

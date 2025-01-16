@@ -59,4 +59,14 @@ public class PeliculaModel {
     public void setDuracion(@NotNull(message = "La duracion de la pelicula es obligatoria") Double duracion) {
         this.duracion = duracion;
     }
+
+    @Override
+    public String toString() {
+        return "PeliculaModel{" +
+                "idPelicula=" + idPelicula +
+                ", nombre='" + nombre + '\'' +
+                ", duracion=" + duracion +
+                ", estado=" + estado +
+                '}';
+    }
 }

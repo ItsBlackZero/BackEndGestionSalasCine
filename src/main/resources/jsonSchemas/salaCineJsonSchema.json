@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/pelicula.schema.json",
+  "title": "Sala Cine",
+  "description": "Esquema para insertar o actualizar una sala cine",
+  "type": "object",
+  "properties": {
+    "nombre": {
+      "type": "string",
+      "minLength": 1,
+      "description": "El nombre de la sala cine"
+    },
+    "estado": {
+      "type": "integer",
+      "enum": [
+        0,
+        1
+      ],
+      "description": "El estado de la sala cine (1 = activo, 0 = inactivo)"
+    }
+  },
+  "required": [
+    "nombre",
+    "estado"
+  ]
+}

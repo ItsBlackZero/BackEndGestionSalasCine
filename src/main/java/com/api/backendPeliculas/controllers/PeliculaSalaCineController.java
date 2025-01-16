@@ -2,6 +2,7 @@ package com.api.backendPeliculas.controllers;
 
 import com.api.backendPeliculas.entities.PeliculaModel;
 import com.api.backendPeliculas.entities.PeliculaSalaCineModel;
+import com.api.backendPeliculas.helpers.PeliculaSalaCineHelper;
 import com.api.backendPeliculas.jsonDynamic.GenericRequest;
 import com.api.backendPeliculas.jsonDynamic.GenericResponse;
 import com.api.backendPeliculas.services.PeliculaSalaCineService;
@@ -32,7 +33,7 @@ public class PeliculaSalaCineController {
 
     public static final String JSON_EJEMPLO = """
             {
-              "body": {
+              
                 "pelicula": {
                   "idPelicula": 0
                 },
@@ -41,17 +42,19 @@ public class PeliculaSalaCineController {
                 },
                 "fechaPublicacion": "2025-01-14",
                 "fechaFin": "2025-01-14"
-              }
+              
             }
             """;
 
     @Autowired
     private PeliculaSalaCineService peliculaSalaCineService;
 
+    @Autowired
+    private PeliculaSalaCineHelper peliculaSalaCineHelper;
+
     @GetMapping
     public ResponseEntity<GenericResponse> getAllPeliculasSalaCine() {
-        GenericResponse response = peliculaSalaCineService.getAllPeliculasSalaCine();
-        return retornarResponse(response);
+        return peliculaSalaCineService.getAllPeliculasSalaCine();
     }
 
     @PostMapping
@@ -65,41 +68,25 @@ public class PeliculaSalaCineController {
                     )
             )
     )
-    public ResponseEntity<GenericResponse> savePelicula(@RequestBody GenericRequest request) throws ParseException {
-        logger.info("Cuerpo recibido: {}", request);
-        GenericResponse response = peliculaSalaCineService.savePeliculaSalaCine(request);
-        return retornarResponse(response);
+    public ResponseEntity<GenericResponse> savePelicula(@Valid @RequestBody PeliculaSalaCineModel peliculaSalaCineModel) throws ParseException {
+        return peliculaSalaCineHelper.validarYGuardarPelicula(peliculaSalaCineModel);
     }
 
     @GetMapping("/porFecha")
-    public ResponseEntity<GenericResponse> getPeliculasPorFecha(
+    public ResponseEntity<GenericResponse> getPeliculasPorFecha(@Valid
             @RequestParam("fecha")
             @DateTimeFormat(pattern = "yyyy-MM-dd") Date fecha
     ) {
-        GenericResponse response = peliculaSalaCineService.getPeliculasPorFecha(fecha);
-        return retornarResponse(response);
+        return peliculaSalaCineHelper.obtenerPorFecha(fecha);
     }
-
     @GetMapping("/porNombreSala")
-    public ResponseEntity<GenericResponse> getPeliculasPorNombreSala( @RequestParam("nombreSalaCine") String nombreSalaCine) {
-        GenericResponse response = peliculaSalaCineService.getPeliculasPorNombreSala(nombreSalaCine);
-        return retornarResponse(response);
+    public ResponseEntity<GenericResponse> getPeliculasPorNombreSala(@Valid @RequestParam("nombreSalaCine") String nombreSalaCine) {
+        return peliculaSalaCineHelper.obtenerPorNombreSala(nombreSalaCine);
     }
-
     @GetMapping("/porNombreYIdSala")
     public ResponseEntity<GenericResponse> getPeliculasPorNombreYIdSala(
             @RequestParam("nombrePelicula") String nombrePelicula,
             @RequestParam("idSalaCine") Long idSalaCine) {
-        GenericResponse response = peliculaSalaCineService.getPeliculasPorNombreYIdSala(nombrePelicula, idSalaCine);
-        return retornarResponse(response);
+        return peliculaSalaCineHelper.obtenerPorNombreYIdSala(nombrePelicula, idSalaCine);
     }
-
-    private ResponseEntity<GenericResponse> retornarResponse (GenericResponse response) {
-        if ("error".equals(response.getStatus())) {
-            return ResponseEntity.status(500).body(response);
-        } else {
-            return ResponseEntity.ok(response);
-        }
-    }
-
 }

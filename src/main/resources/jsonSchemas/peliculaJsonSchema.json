@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/pelicula.schema.json",
+  "title": "Película",
+  "description": "Esquema para insertar o actualizar una película",
+  "type": "object",
+  "properties": {
+    "nombre": {
+      "type": "string",
+      "minLength": 1,
+      "description": "El nombre de la película"
+    },
+    "duracion": {
+      "type": "number",
+      "minimum": 0,
+      "description": "La duración de la película en minutos"
+    },
+    "estado": {
+      "type": "integer",
+      "enum": [
+        0,
+        1
+      ],
+      "description": "El estado de la película (1 = activo, 0 = inactivo)"
+    }
+  },
+  "required": [
+    "nombre",
+    "duracion",
+    "estado"
+  ]
+}
