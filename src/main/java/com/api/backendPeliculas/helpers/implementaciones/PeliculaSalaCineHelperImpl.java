@@ -103,7 +103,12 @@ public class PeliculaSalaCineHelperImpl extends BaseCrudHelper<PeliculaSalaCineM
     @Override
     public ResponseEntity<GenericResponse> obtenerPorNombreYIdSala(String nombreSala, Long idSalaCine){
         List<PeliculaSalaCineModel> peliculaSalaCineModel = peliculaSalaCineService.getPeliculasPorNombreYIdSala(nombreSala,idSalaCine);
-        validacionByFecha.validarFecha(peliculaSalaCineModel);
+
+        if(peliculaSalaCineModel.isEmpty()){
+            GenericResponse response = new GenericResponse("error", "No se encontraron peliculas para esa sala", null);
+            return ResponseEntity.status(404).body(response);
+        }
+
         GenericResponse response = new GenericResponse("success", "Peliculas encontradas", peliculaSalaCineModel);
             return ResponseEntity.ok(response);
     }
